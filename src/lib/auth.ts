@@ -1,8 +1,4 @@
-type User = {
-  username: string;
-  email: string;
-  password: string;
-};
+import { User } from "@/types/users.types";
 
 export function getUsers(): User[] {
   const users = localStorage.getItem("users");
@@ -41,7 +37,7 @@ export function signUp(
   if (!isNewUser(username, email)) {
     return false;
   }
-  const user = { username, email, password };
+  const user = { id: crypto.randomUUID(), username, email, password };
   addUser(user);
   localStorage.setItem("currentUser", JSON.stringify(user));
   return true;

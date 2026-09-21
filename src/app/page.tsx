@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ProjectCard from "@/components/ProjectCard";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { Project } from "@/types/projects.types";
 
 const projects = [
   {
