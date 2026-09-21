@@ -1,11 +1,31 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { logIn } from "@/lib/auth";
 
 export default function SignIn() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    const success = logIn(email, password);
+    if (!success) {
+      setError("Invalid email or password.");
+      return;
+    }
+
+    router.push("/");
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md space-y-5">
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
         <div>
           <h1 className="text-2xl font-bold">Sign in</h1>
         </div>
@@ -21,6 +41,8 @@ export default function SignIn() {
             autoComplete="email"
             placeholder="you@example.com"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
           />
         </div>
@@ -36,9 +58,13 @@ export default function SignIn() {
             autoComplete="current-password"
             placeholder="Enter your password"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
           />
         </div>
+
+        {error && <p className="text-sm text-red-700">{error}</p>}
 
         <div className="flex gap-3">
           <button
@@ -54,10 +80,10 @@ export default function SignIn() {
             href="/create-account"
             className="font-medium text-foreground underline"
           >
-            Create account
+            Create one
           </Link>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
