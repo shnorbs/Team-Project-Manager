@@ -2,7 +2,7 @@ import Link from "next/link";
 
 type ProjectCardProps = {
   title: string;
-  description: string;
+  description?: string;
 };
 
 export default function ProjectCard({ title, description }: ProjectCardProps) {

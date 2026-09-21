@@ -5,43 +5,32 @@ import ProjectCard from "@/components/ProjectCard";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { Project } from "@/types/projects.types";
-
-const projects = [
-  {
-    id: 1,
-    title: "CURT Task Manager",
-    description: "I already regret this",
-  },
-  {
-    id: 2,
-    title: "Something",
-    description: "yapyapyapyap",
-  },
-  {
-    id: 3,
-    title:
-      "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
-    description: "aaaaaaaaaaaaaaaaaaaa",
-  },
-];
+import { getProjects } from "@/lib/projects";
+import { User } from "@/types/users.types";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
-  const [user, setUser] = useState<{
-    username: string;
-    email: string;
-    password: string;
-  } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const currentUser = getCurrentUser();
-    setUser(currentUser);
-    setChecked(true);
 
     if (!currentUser) {
       router.push("/sign-in");
+      return;
     }
+
+    setUser(currentUser);
+
+    const allProjects = getProjects();
+    const userProjects = allProjects.filter((project) =>
+      project.members.includes(currentUser.id),
+    );
+    setProjects(userProjects);
+    setChecked(true);
   }, [router]);
 
   if (!checked) {
@@ -55,11 +44,23 @@ export default function Home() {
       </div>
 
       <div className="flex items-center justify-center pt-12">
-        <div className="flex flex-col gap-4">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} {...project} />
-          ))}
-        </div>
+        {projects.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p className="text-foreground/60">
+              You don&apos;t have any projects yet.
+            </p>
+
+            <Link href="/add-project" className="text-foreground underline">
+              Add a project
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );
