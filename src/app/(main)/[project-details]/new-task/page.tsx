@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 
-export default function AddProjectPage() {
+export default function AddTaskPage() {
   const [title, setTitle] = useState("");
   const [titleError, setTitleError] = useState(false);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
-      <h1 className="text-xl font-bold">Add a project</h1>
+      <h1 className="text-xl font-bold">Add a task</h1>
 
       <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,30rem)_13rem]">
         <div className="space-y-4">
@@ -35,8 +35,24 @@ export default function AddProjectPage() {
         </div>
 
         <div className="space-y-5">
+          <span className="mb-2 block text-sm font-medium">Priority</span>
+          <select
+            defaultValue="low"
+            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground focus:border-foreground focus:outline-none"
+          >
+            <option className="text-green-800" value="low">
+              Low
+            </option>
+            <option className="text-yellow-800" value="medium">
+              Medium
+            </option>
+            <option className="text-red-800" value="high">
+              High
+            </option>
+          </select>
+
           <div>
-            <span className="mb-2 block text-sm font-medium">Invite users</span>
+            <span className="mb-2 block text-sm font-medium">Assign to</span>
             <select
               defaultValue="unassigned"
               className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground focus:border-foreground focus:outline-none"

@@ -1,11 +1,9 @@
 "use client";
 
-function ProjectsPage() {
+export default function ProjectDetails() {
   return (
     <>
       <div>Project Details</div>
     </>
   );
 }
-
-export default ProjectsPage;

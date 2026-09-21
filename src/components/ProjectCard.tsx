@@ -3,10 +3,10 @@ import Link from "next/link";
 type ProjectCardProps = {
   title: string;
   description: string;
-  slug: string;
 };
 
-function ProjectCard({ title, description, slug }: ProjectCardProps) {
+export default function ProjectCard({ title, description }: ProjectCardProps) {
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return (
     <>
       <Link
@@ -19,5 +19,3 @@ function ProjectCard({ title, description, slug }: ProjectCardProps) {
     </>
   );
 }
-
-export default ProjectCard;
