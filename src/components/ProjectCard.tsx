@@ -1,16 +1,12 @@
 import Link from "next/link";
+import { Project } from "@/types/projects.types";
 
-type ProjectCardProps = {
-  title: string;
-  description?: string;
-};
-
-export default function ProjectCard({ title, description }: ProjectCardProps) {
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+export default function ProjectCard(project: Project) {
+  const { id, title, description } = project;
   return (
     <>
       <Link
-        href={`/${slug}`}
+        href={`/${id}`}
         className="bg-background border-2 border-foreground/50 rounded-lg p-4 w-120"
       >
         <h3 className="truncate text-lg font-bold">{title}</h3>
