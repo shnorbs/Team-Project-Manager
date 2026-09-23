@@ -19,6 +19,11 @@ export function getTasksByProjectId(projectId: string): Task[] {
   return tasks.filter((t) => t.projectId === projectId);
 }
 
+export function getTasksByUserId(userId: string): Task[] {
+  const tasks = getTasks();
+  return tasks.filter((t) => t.assignedTo === userId);
+}
+
 export function addTask(task: Omit<Task, "id">): void {
   const tasks = getTasks();
   const taskWithId: Task = { id: crypto.randomUUID(), ...task };

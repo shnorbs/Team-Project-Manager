@@ -3,20 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { logIn } from "@/lib/auth";
+import { signUp } from "@/lib/auth";
 
-export default function SignIn() {
+export default function CreateAccount() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-    const success = logIn(email, password);
+    const success = signUp(username, email, password);
     if (!success) {
-      setError("Invalid email or password.");
+      setError("Username or email is already taken.");
       return;
     }
 
@@ -27,7 +28,22 @@ export default function SignIn() {
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
         <div>
-          <h1 className="text-2xl font-bold">Sign in</h1>
+          <h1 className="text-2xl font-bold">Create account</h1>
+        </div>
+
+        <div>
+          <label htmlFor="username" className="mb-2 block text-sm font-medium">
+            Username
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+          />
         </div>
 
         <div>
@@ -39,7 +55,6 @@ export default function SignIn() {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -55,8 +70,7 @@ export default function SignIn() {
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
-            placeholder="Enter your password"
+            autoComplete="new-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -66,21 +80,20 @@ export default function SignIn() {
 
         {error && <p className="text-sm text-red-700">{error}</p>}
 
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            className="flex-2 rounded-lg bg-foreground px-4 py-3 font-medium text-background hover:opacity-90"
-          >
-            Sign In
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-foreground px-4 py-3 font-medium text-background hover:opacity-90"
+        >
+          Create Account
+        </button>
+
         <p className="text-center text-sm text-foreground/60">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/create-account"
+            href="/sign-in"
             className="font-medium text-foreground underline"
           >
-            Create one
+            Sign in
           </Link>
         </p>
       </form>

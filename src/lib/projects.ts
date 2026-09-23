@@ -14,6 +14,11 @@ export function getProjectById(projectId: string): Project | null {
   return project || null;
 }
 
+export function isOwner(projectId: string, userId: string): boolean {
+  const project = getProjectById(projectId);
+  return project?.ownerId === userId;
+}
+
 export function addProject(project: Omit<Project, "id">): void {
   const projects = getProjects();
   const projectWithId: Project = { id: crypto.randomUUID(), ...project };

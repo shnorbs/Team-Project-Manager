@@ -3,21 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUp } from "@/lib/auth";
+import { logIn } from "@/lib/auth";
 
-export default function CreateAccount() {
+export default function SignIn() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
 
-    const success = signUp(username, email, password);
+    const success = logIn(email, password);
     if (!success) {
-      setError("Username or email is already taken.");
+      setError("Invalid email or password.");
       return;
     }
 
@@ -28,22 +27,7 @@ export default function CreateAccount() {
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
         <div>
-          <h1 className="text-2xl font-bold">Create account</h1>
-        </div>
-
-        <div>
-          <label htmlFor="username" className="mb-2 block text-sm font-medium">
-            Username
-          </label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
-          />
+          <h1 className="text-2xl font-bold">Sign in</h1>
         </div>
 
         <div>
@@ -55,6 +39,7 @@ export default function CreateAccount() {
             name="email"
             type="email"
             autoComplete="email"
+            placeholder="you@example.com"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -70,7 +55,8 @@ export default function CreateAccount() {
             id="password"
             name="password"
             type="password"
-            autoComplete="new-password"
+            autoComplete="current-password"
+            placeholder="Enter your password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -80,20 +66,21 @@ export default function CreateAccount() {
 
         {error && <p className="text-sm text-red-700">{error}</p>}
 
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-foreground px-4 py-3 font-medium text-background hover:opacity-90"
-        >
-          Create Account
-        </button>
-
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            className="flex-2 rounded-lg bg-foreground px-4 py-3 font-medium text-background hover:opacity-90"
+          >
+            Sign In
+          </button>
+        </div>
         <p className="text-center text-sm text-foreground/60">
-          Already have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
-            href="/sign-in"
+            href="/create-account"
             className="font-medium text-foreground underline"
           >
-            Sign in
+            Create one
           </Link>
         </p>
       </form>
