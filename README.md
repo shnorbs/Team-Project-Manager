@@ -11,6 +11,10 @@ A client-side task management application for organizing projects and the tasks 
 - Sonner for toast notifications
 - Browser localStorage for persistence
 
+## Website Link (Make sure to use VPN as netlify is blocked on Egypt):
+
+- https://preeminent-duckanoo-a5693c.netlify.app/
+
 ## Setup
 
 Requirements:
