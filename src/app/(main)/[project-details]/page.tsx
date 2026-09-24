@@ -92,6 +92,10 @@ export default function ProjectTasksPage() {
     refresh();
   }
 
+  function clearSelectedTask() {
+    setSelectedTaskId(null);
+  }
+
   const sortedTasks = [...tasks].sort(
     (a, b) => PRIORITY_WEIGHT[b.priority] - PRIORITY_WEIGHT[a.priority],
   );
@@ -158,7 +162,10 @@ export default function ProjectTasksPage() {
             <div className="-mb-2 md:col-span-2">
               <input
                 value={taskSearch}
-                onChange={(event) => setTaskSearch(event.target.value)}
+                onChange={(event) => {
+                  setTaskSearch(event.target.value);
+                  clearSelectedTask();
+                }}
                 placeholder="Search tasks"
                 maxLength={100}
                 className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
@@ -166,7 +173,10 @@ export default function ProjectTasksPage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => setTaskStatus("all")}
+                  onClick={() => {
+                    setTaskStatus("all");
+                    clearSelectedTask();
+                  }}
                   className={`rounded-full border-2 border-foreground/30 px-4 py-2 text-sm font-medium ${taskStatus === "all" ? "bg-foreground/15" : "bg-transparent"}`}
                 >
                   All statuses
@@ -175,7 +185,10 @@ export default function ProjectTasksPage() {
                   <button
                     key={status}
                     type="button"
-                    onClick={() => setTaskStatus(status)}
+                      onClick={() => {
+                        setTaskStatus(status);
+                        clearSelectedTask();
+                      }}
                     className={`rounded-full border-2 px-4 py-2 text-sm font-medium ${STATUS_STYLES[status].border} ${taskStatus === status ? STATUS_STYLES[status].selected : "bg-transparent"} ${STATUS_STYLES[status].hover}`}
                   >
                     {STATUS_LABELS[status]}
@@ -185,7 +198,10 @@ export default function ProjectTasksPage() {
               <div className="mt-2 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => setTaskPriority("all")}
+                  onClick={() => {
+                    setTaskPriority("all");
+                    clearSelectedTask();
+                  }}
                   className={`rounded-full border-2 border-foreground/30 px-4 py-2 text-sm font-medium ${taskPriority === "all" ? "bg-foreground/15" : "bg-transparent"}`}
                 >
                   All priorities
@@ -195,7 +211,10 @@ export default function ProjectTasksPage() {
                     <button
                       key={priority}
                       type="button"
-                      onClick={() => setTaskPriority(priority)}
+                      onClick={() => {
+                        setTaskPriority(priority);
+                        clearSelectedTask();
+                      }}
                       className={`rounded-full border-2 px-4 py-2 text-sm font-medium capitalize ${taskPriority === priority ? PRIORITY_STYLES[priority].selected : "bg-transparent"} ${PRIORITY_STYLES[priority].hover}`}
                       style={{ borderColor: PRIORITY_STYLES[priority].outline }}
                     >
@@ -207,14 +226,20 @@ export default function ProjectTasksPage() {
               <div className="mt-2 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => setTaskAssignee("all")}
+                  onClick={() => {
+                    setTaskAssignee("all");
+                    clearSelectedTask();
+                  }}
                   className={`rounded-full border-2 border-foreground/30 px-4 py-2 text-sm font-medium ${taskAssignee === "all" ? "bg-foreground/15" : "bg-transparent"}`}
                 >
                   All assignees
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTaskAssignee("unassigned")}
+                  onClick={() => {
+                    setTaskAssignee("unassigned");
+                    clearSelectedTask();
+                  }}
                   className={`rounded-full border-2 border-foreground/30 px-4 py-2 text-sm font-medium ${taskAssignee === "unassigned" ? "bg-foreground/15" : "bg-transparent"}`}
                 >
                   Unassigned
@@ -227,7 +252,10 @@ export default function ProjectTasksPage() {
                     <button
                       key={user.id}
                       type="button"
-                      onClick={() => setTaskAssignee(user.id)}
+                      onClick={() => {
+                        setTaskAssignee(user.id);
+                        clearSelectedTask();
+                      }}
                       className={`rounded-full border-2 border-foreground/30 px-4 py-2 text-sm font-medium ${taskAssignee === user.id ? "bg-foreground/15" : "bg-transparent"}`}
                     >
                       {user.username}
