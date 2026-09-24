@@ -1,123 +1,74 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Task } from "@/types/tasks.types";
-
-const STATUS_LABELS: Record<Task["status"], string> = {
-  "to-do": "To Do",
-  "in-progress": "In Progress",
-  done: "Done",
-};
-
-const STATUS_OPTIONS: Task["status"][] = ["to-do", "in-progress", "done"];
+import {
+  STATUS_LABELS,
+  STATUS_STYLES,
+  PRIORITY_STYLES,
+} from "@/lib/task-card-styles";
 
 interface TaskCardProps {
   task: Task;
   assigneeName: string;
-  canManage: boolean;
-  canUpdateStatus: boolean;
   projectId: string;
-  onStatusChange: (taskId: string, status: Task["status"]) => void;
-  onDelete: (taskId: string) => void;
+  onSelect?: (task: Task) => void;
+  selected?: boolean;
 }
 
 export default function TaskCard({
   task,
   assigneeName,
-  canManage,
-  canUpdateStatus,
   projectId,
-  onStatusChange,
-  onDelete,
+  onSelect,
+  selected = false,
 }: TaskCardProps) {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const showMenu = canManage || canUpdateStatus;
-
-  return (
-    <div className="flex items-start justify-between rounded-lg border-2 border-foreground/50 p-4">
-      <div>
-        <p className="font-medium">{task.title}</p>
-
-        {task.description && (
-          <p className="text-sm text-foreground/60">{task.description}</p>
-        )}
-
-        <p className="mt-1 text-xs text-foreground/50">
-          {task.priority} · {STATUS_LABELS[task.status]} · {assigneeName}
-        </p>
+  const { gradient, badge } = PRIORITY_STYLES[task.priority];
+  const statusStyle = STATUS_STYLES[task.status];
+  const content = (
+    <>
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${badge}`}
+        >
+          {task.priority}
+        </span>
+        <span
+          className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusStyle.badge}`}
+        >
+          {STATUS_LABELS[task.status]}
+        </span>
       </div>
 
-      {showMenu && (
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setOpen((prev) => !prev)}
-            className="rounded-md border-2 border-foreground/50 px-3 py-1 text-sm font-medium hover:bg-foreground/5"
-          >
-            •••
-          </button>
+      <p className="mt-1 truncate text-lg font-bold text-white">{task.title}</p>
 
-          {open && (
-            <div className="absolute right-0 z-10 mt-2 w-44 rounded-lg border-2 border-foreground/50 bg-background p-1 shadow-lg">
-              <p className="px-3 pb-1 pt-2 text-xs font-medium text-foreground/50">
-                Set status
-              </p>
+      <p className="mt-1 text-xs text-white/60">{assigneeName}</p>
+    </>
+  );
 
-              {STATUS_OPTIONS.map((status) => (
-                <button
-                  key={status}
-                  onClick={() => {
-                    onStatusChange(task.id, status);
-                    setOpen(false);
-                  }}
-                  disabled={status === task.status}
-                  className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-foreground/5 disabled:opacity-40"
-                >
-                  {STATUS_LABELS[status]}
-                  {status === task.status && <span>✓</span>}
-                </button>
-              ))}
-
-              {canManage && (
-                <>
-                  <div className="my-1 border-t border-foreground/20" />
-
-                  <Link
-                    href={`/${projectId}/task-form?taskId=${task.id}`}
-                    className="block rounded-md px-3 py-2 text-sm hover:bg-foreground/5"
-                    onClick={() => setOpen(false)}
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      onDelete(task.id);
-                      setOpen(false);
-                    }}
-                    className="block w-full rounded-md px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+  return (
+    <div
+      style={{ backgroundImage: gradient }}
+      className={`relative flex items-start justify-between rounded-lg p-4 shadow-md transition-all ${
+        onSelect ? "cursor-pointer hover:-translate-y-0.5" : ""
+      } ${selected ? "brightness-125" : ""}`}
+      onClick={() => onSelect?.(task)}
+      onKeyDown={(event) => {
+        if (onSelect && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onSelect(task);
+        }
+      }}
+      role={onSelect ? "button" : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+    >
+      <div className="min-w-0 flex-1 pr-4">
+        {onSelect ? (
+          content
+        ) : (
+          <Link href={`/${projectId}/${task.id}`}>{content}</Link>
+        )}
+      </div>
     </div>
   );
 }

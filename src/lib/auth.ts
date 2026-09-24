@@ -1,32 +1,46 @@
 import { User } from "@/types/users.types";
+import { toast } from "sonner";
+import {
+  readStorageArray,
+  readStorageObject,
+  removeStorage,
+  writeStorage,
+} from "@/lib/storage";
 
 export function getUsers(): User[] {
-  const users = localStorage.getItem("users");
-  if (!users) {
-    return [];
-  }
-  return JSON.parse(users);
+  return readStorageArray<User>("users");
 }
 
 export function getCurrentUser(): User | null {
-  const currentUser = localStorage.getItem("currentUser");
-  if (!currentUser) {
-    return null;
+  return readStorageObject<User>("currentUser");
+}
+
+export type UniquenessConflict = "username" | "email" | null;
+
+export function checkUniqueness(
+  username: string,
+  email: string,
+  excludeUserId?: string,
+): UniquenessConflict {
+  const users = getUsers().filter((u) => u.id !== excludeUserId);
+
+  if (users.some((u) => u.username === username)) {
+    return "username";
   }
-  return JSON.parse(currentUser);
+  if (users.some((u) => u.email === email)) {
+    return "email";
+  }
+  return null;
 }
 
-export function isNewUser(username: string, email: string): boolean {
-  const users = getUsers();
-  return !users.some(
-    (user) => user.username === username || user.email === email,
-  );
-}
-
-export function addUser(user: User): void {
+export function addUser(user: User): boolean {
   const users = getUsers();
   users.push(user);
-  localStorage.setItem("users", JSON.stringify(users));
+  if (!writeStorage("users", users)) {
+    toast.error("Unable to save user information");
+    return false;
+  }
+  return true;
 }
 
 export function signUp(
@@ -34,13 +48,74 @@ export function signUp(
   email: string,
   password: string,
 ): boolean {
-  if (!isNewUser(username, email)) {
+  if (checkUniqueness(username, email) !== null) {
     return false;
   }
   const user = { id: crypto.randomUUID(), username, email, password };
-  addUser(user);
-  localStorage.setItem("currentUser", JSON.stringify(user));
+  if (!addUser(user)) {
+    return false;
+  }
+  if (!writeStorage("currentUser", user)) {
+    toast.error("Unable to complete sign up");
+    return false;
+  }
   return true;
+}
+
+export function updateUser(updatedUser: User): boolean {
+  const users = getUsers();
+  const index = users.findIndex((u) => u.id === updatedUser.id);
+  if (index === -1) {
+    return false;
+  }
+  users[index] = updatedUser;
+  if (
+    !writeStorage("users", users) ||
+    !writeStorage("currentUser", updatedUser)
+  ) {
+    toast.error("Unable to save user information");
+    return false;
+  }
+  toast.success("User information updated");
+  return true;
+}
+
+export function updateName(newUsername: string): boolean {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    return false;
+  }
+  if (
+    checkUniqueness(newUsername, currentUser.email, currentUser.id) ===
+    "username"
+  ) {
+    return false;
+  }
+  const updatedUser = { ...currentUser, username: newUsername };
+  return updateUser(updatedUser);
+}
+
+export function updateEmail(newEmail: string): boolean {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    return false;
+  }
+  if (
+    checkUniqueness(currentUser.username, newEmail, currentUser.id) === "email"
+  ) {
+    return false;
+  }
+  const updatedUser = { ...currentUser, email: newEmail };
+  return updateUser(updatedUser);
+}
+
+export function updatePassword(newPassword: string): boolean {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    return false;
+  }
+  const updatedUser = { ...currentUser, password: newPassword };
+  return updateUser(updatedUser);
 }
 
 export function logIn(email: string, password: string): boolean {
@@ -49,22 +124,13 @@ export function logIn(email: string, password: string): boolean {
   if (!user) {
     return false;
   }
-  localStorage.setItem("currentUser", JSON.stringify(user));
+  if (!writeStorage("currentUser", user)) {
+    toast.error("Unable to complete sign in");
+    return false;
+  }
   return true;
 }
 
 export function logOut(): void {
-  localStorage.removeItem("currentUser");
+  removeStorage("currentUser");
 }
-
-const auth = {
-  getUsers,
-  getCurrentUser,
-  isNewUser,
-  addUser,
-  signUp,
-  logIn,
-  logOut,
-};
-
-export default auth;

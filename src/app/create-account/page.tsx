@@ -15,7 +15,22 @@ export default function CreateAccount() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const success = signUp(username, email, password);
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+    if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
+      setError("Username must be between 3 and 30 characters.");
+      return;
+    }
+    if (!trimmedEmail) {
+      setError("Email cannot be empty.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    const success = signUp(trimmedUsername, trimmedEmail, password);
     if (!success) {
       setError("Username or email is already taken.");
       return;
@@ -25,7 +40,7 @@ export default function CreateAccount() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6 sm:py-12">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
         <div>
           <h1 className="text-2xl font-bold">Create account</h1>
@@ -40,9 +55,11 @@ export default function CreateAccount() {
             name="username"
             type="text"
             required
+            minLength={3}
+            maxLength={30}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+            className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
           />
         </div>
 
@@ -56,9 +73,10 @@ export default function CreateAccount() {
             type="email"
             autoComplete="email"
             required
+            maxLength={254}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+            className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
           />
         </div>
 
@@ -72,9 +90,11 @@ export default function CreateAccount() {
             type="password"
             autoComplete="new-password"
             required
+            minLength={8}
+            maxLength={128}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+            className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
           />
         </div>
 

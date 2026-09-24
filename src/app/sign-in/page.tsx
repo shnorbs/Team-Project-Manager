@@ -14,7 +14,7 @@ export default function SignIn() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    const success = logIn(email, password);
+    const success = logIn(email.trim(), password);
     if (!success) {
       setError("Invalid email or password.");
       return;
@@ -24,7 +24,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 py-12">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6 sm:py-12">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
         <div>
           <h1 className="text-2xl font-bold">Sign in</h1>
@@ -39,11 +39,11 @@ export default function SignIn() {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
             required
+            maxLength={254}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+            className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
           />
         </div>
 
@@ -56,11 +56,11 @@ export default function SignIn() {
             name="password"
             type="password"
             autoComplete="current-password"
-            placeholder="Enter your password"
             required
+            maxLength={128}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border-2 border-foreground/50 bg-background p-3 text-foreground placeholder:text-foreground/40 focus:border-foreground focus:outline-none"
+            className="modal-field w-full rounded-lg p-3 text-foreground placeholder:text-foreground/40"
           />
         </div>
 

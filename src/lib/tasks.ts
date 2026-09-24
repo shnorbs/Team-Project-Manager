@@ -1,11 +1,9 @@
 import { Task } from "@/types/tasks.types";
+import { toast } from "sonner";
+import { readStorageArray, writeStorage } from "@/lib/storage";
 
 export function getTasks(): Task[] {
-  const tasks = localStorage.getItem("tasks");
-  if (!tasks) {
-    return [];
-  }
-  return JSON.parse(tasks);
+  return readStorageArray<Task>("tasks");
 }
 
 export function getTaskById(taskId: string): Task | null {
@@ -28,7 +26,11 @@ export function addTask(task: Omit<Task, "id">): void {
   const tasks = getTasks();
   const taskWithId: Task = { id: crypto.randomUUID(), ...task };
   tasks.push(taskWithId);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  if (writeStorage("tasks", tasks)) {
+    toast.success("Task created");
+  } else {
+    toast.error("Unable to save task");
+  }
 }
 
 export function updateTask(updatedTask: Task): void {
@@ -36,23 +38,22 @@ export function updateTask(updatedTask: Task): void {
   const index = tasks.findIndex((t) => t.id === updatedTask.id);
   if (index !== -1) {
     tasks[index] = updatedTask;
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    if (writeStorage("tasks", tasks)) {
+      toast.success("Task updated");
+    } else {
+      toast.error("Unable to save task");
+    }
   }
 }
 
 export function deleteTask(taskId: string): void {
   const tasks = getTasks();
   const updatedTasks = tasks.filter((t) => t.id !== taskId);
-  localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  if (updatedTasks.length !== tasks.length) {
+    if (writeStorage("tasks", updatedTasks)) {
+      toast.success("Task deleted");
+    } else {
+      toast.error("Unable to delete task");
+    }
+  }
 }
-
-const tasks = {
-  getTasks,
-  getTaskById,
-  getTasksByProjectId,
-  addTask,
-  updateTask,
-  deleteTask,
-};
-
-export default tasks;
