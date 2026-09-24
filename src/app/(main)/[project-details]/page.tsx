@@ -185,10 +185,10 @@ export default function ProjectTasksPage() {
                   <button
                     key={status}
                     type="button"
-                      onClick={() => {
-                        setTaskStatus(status);
-                        clearSelectedTask();
-                      }}
+                    onClick={() => {
+                      setTaskStatus(status);
+                      clearSelectedTask();
+                    }}
                     className={`rounded-full border-2 px-4 py-2 text-sm font-medium ${STATUS_STYLES[status].border} ${taskStatus === status ? STATUS_STYLES[status].selected : "bg-transparent"} ${STATUS_STYLES[status].hover}`}
                   >
                     {STATUS_LABELS[status]}
