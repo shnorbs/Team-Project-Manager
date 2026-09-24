@@ -1,6 +1,11 @@
 import { Task } from "@/types/tasks.types";
 import { toast } from "sonner";
-import { readStorageArray, writeStorage } from "@/lib/storage";
+import {
+  addToStorageArray,
+  readStorageArray,
+  removeStorageItem,
+  updateStorageItem,
+} from "@/lib/storage";
 
 export function getTasks(): Task[] {
   return readStorageArray<Task>("tasks");
@@ -23,10 +28,8 @@ export function getTasksByUserId(userId: string): Task[] {
 }
 
 export function addTask(task: Omit<Task, "id">): void {
-  const tasks = getTasks();
   const taskWithId: Task = { id: crypto.randomUUID(), ...task };
-  tasks.push(taskWithId);
-  if (writeStorage("tasks", tasks)) {
+  if (addToStorageArray("tasks", taskWithId)) {
     toast.success("Task created");
   } else {
     toast.error("Unable to save task");
@@ -34,26 +37,18 @@ export function addTask(task: Omit<Task, "id">): void {
 }
 
 export function updateTask(updatedTask: Task): void {
-  const tasks = getTasks();
-  const index = tasks.findIndex((t) => t.id === updatedTask.id);
-  if (index !== -1) {
-    tasks[index] = updatedTask;
-    if (writeStorage("tasks", tasks)) {
-      toast.success("Task updated");
-    } else {
-      toast.error("Unable to save task");
-    }
+  if (updateStorageItem("tasks", updatedTask)) {
+    toast.success("Task updated");
+  } else {
+    toast.error("Unable to save task");
   }
 }
 
 export function deleteTask(taskId: string): void {
-  const tasks = getTasks();
-  const updatedTasks = tasks.filter((t) => t.id !== taskId);
-  if (updatedTasks.length !== tasks.length) {
-    if (writeStorage("tasks", updatedTasks)) {
-      toast.success("Task deleted");
-    } else {
-      toast.error("Unable to delete task");
-    }
+  const result = removeStorageItem("tasks", taskId);
+  if (result === "saved") {
+    toast.success("Task deleted");
+  } else if (result === "failed") {
+    toast.error("Unable to delete task");
   }
 }

@@ -50,3 +50,40 @@ export function readStorageObject<T>(key: string): T | null {
 
   return storedValue as T;
 }
+
+export function addToStorageArray<T>(key: string, item: T): boolean {
+  const items = readStorageArray<T>(key);
+  items.push(item);
+  return writeStorage(key, items);
+}
+
+export function updateStorageItem<T extends { id: string }>(
+  key: string,
+  updatedItem: T,
+): boolean {
+  const items = readStorageArray<T>(key);
+  const itemIndex = items.findIndex((item) => item.id === updatedItem.id);
+
+  if (itemIndex === -1) {
+    return false;
+  }
+
+  items[itemIndex] = updatedItem;
+  return writeStorage(key, items);
+}
+
+export type RemoveStorageResult = "saved" | "not-found" | "failed";
+
+export function removeStorageItem(
+  key: string,
+  itemId: string,
+): RemoveStorageResult {
+  const items = readStorageArray<{ id: string }>(key);
+  const remainingItems = items.filter((item) => item.id !== itemId);
+
+  if (remainingItems.length === items.length) {
+    return "not-found";
+  }
+
+  return writeStorage(key, remainingItems) ? "saved" : "failed";
+}

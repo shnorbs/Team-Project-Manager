@@ -1,9 +1,11 @@
 import { User } from "@/types/users.types";
 import { toast } from "sonner";
 import {
+  addToStorageArray,
   readStorageArray,
   readStorageObject,
   removeStorage,
+  updateStorageItem,
   writeStorage,
 } from "@/lib/storage";
 
@@ -34,9 +36,7 @@ export function checkUniqueness(
 }
 
 export function addUser(user: User): boolean {
-  const users = getUsers();
-  users.push(user);
-  if (!writeStorage("users", users)) {
+  if (!addToStorageArray("users", user)) {
     toast.error("Unable to save user information");
     return false;
   }
@@ -63,16 +63,10 @@ export function signUp(
 }
 
 export function updateUser(updatedUser: User): boolean {
-  const users = getUsers();
-  const index = users.findIndex((u) => u.id === updatedUser.id);
-  if (index === -1) {
+  if (!updateStorageItem("users", updatedUser)) {
     return false;
   }
-  users[index] = updatedUser;
-  if (
-    !writeStorage("users", users) ||
-    !writeStorage("currentUser", updatedUser)
-  ) {
+  if (!writeStorage("currentUser", updatedUser)) {
     toast.error("Unable to save user information");
     return false;
   }
