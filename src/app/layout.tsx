@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Project Manager",
   description: "A simple project management tool",
   icons: {
-    icon: "/curt-logo-favicon.svg",
+    icon: "/curt-logo.png",
   },
 };
 
